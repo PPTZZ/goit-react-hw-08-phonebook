@@ -3,35 +3,82 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 
 axios.defaults.baseURL = 'https://connections-api.goit.global/';
 
-export const handleRegister = async (userData) => {
-	try {
-		const response = await axios.post('users/signup', userData);
-		console.log(response);
-	} catch (error) {
-		console.error(error);
-	}
+// Adding JWT
+
+const addAuthHeader = token => {
+  axios.defaults.headers.common.Authorization = `Bearer ${token}`;
 };
 
-export const addContact = createAsyncThunk(
-	'contacts/addContact',
-	async (text, thunkAPI) => {
-		try {
-			const response = await axios.post('/contacts', { text });
-			return response.data;
-		} catch (e) {
-			return thunkAPI.rejectWithValue(e.message);
-		}
-	}
+// Removing JWT
+const removeAuthHeader = () => {
+  axios.defaults.headers.common.Authorization = '';
+};
+
+// Handling registration
+export const handleRegister = createAsyncThunk(
+  'auth/handleRegister',
+  async (userData, thunkAPI) => {
+    try {
+      const response = await axios.post('users/signup', userData);
+      addAuthHeader(response.data.token);
+      return response.data;
+    } catch (error) {
+      console.error(error.message);
+
+      return thunkAPI.rejectWithValue(error.message);
+    }
+  }
 );
 
+// Handling login
+export const handleLogIn = createAsyncThunk(
+  'auth/handleLogIn',
+  async (userData, thunkAPI) => {
+    try {
+      const response = await axios.post('users/login', userData);
+      addAuthHeader(response.data.token);
+      return response.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.message);
+    }
+  }
+);
+
+// Handling logout
+export const handleLogOut = createAsyncThunk(
+  'auth/handleLogOut',
+  async (_, thunkAPI) => {
+    try {
+      await axios.post('users/logout');
+      removeAuthHeader();
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.message);
+    }
+  }
+);
+
+// Adding Contacts
+export const addContact = createAsyncThunk(
+  'contacts/addContact',
+  async (text, thunkAPI) => {
+    try {
+      const response = await axios.post('contacts', { text });
+      return response.data;
+    } catch (e) {
+      return thunkAPI.rejectWithValue(e.message);
+    }
+  }
+);
+
+// Deleting Contacts
 export const deleteContact = createAsyncThunk(
-	'contacts/deleteContact',
-	async (contactId, thunkAPI) => {
-		try {
-			const response = await axios.delete(`/contacts/${contactId}`);
-			return response.data;
-		} catch (e) {
-			return thunkAPI.rejectWithValue(e.message);
-		}
-	}
+  'contacts/deleteContact',
+  async (contactId, thunkAPI) => {
+    try {
+      const response = await axios.delete(`/contacts/${contactId}`);
+      return response.data;
+    } catch (e) {
+      return thunkAPI.rejectWithValue(e.message);
+    }
+  }
 );

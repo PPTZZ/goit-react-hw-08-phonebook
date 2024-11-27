@@ -4,25 +4,28 @@ import { combineReducers } from '@reduxjs/toolkit';
 import { persistReducer } from 'redux-persist';
 import { alertReducer } from './slices/alertSlice';
 import { myContactsReducer } from './slices/myContactsSlice';
+import { authReducer } from './slices/authSlice';
 
 const persistConfigure = {
-	key: 'root',
-	storage,
+  key: 'root',
+  storage,
+  whitelist: ['token'],
 };
 
 const reducer = combineReducers({
-	alert: alertReducer,
-	myContacts: myContactsReducer,
+  auth: authReducer,
+  alert: alertReducer,
+  myContacts: myContactsReducer,
 });
 
 const persistedReducer = persistReducer(persistConfigure, reducer);
 
 const store = configureStore({
-	reducer: persistedReducer,
-	middleware: (getDefaultMiddleware) =>
-		getDefaultMiddleware({
-			serializableCheck: false,
-		}),
+  reducer: persistedReducer,
+  middleware: getDefaultMiddleware =>
+    getDefaultMiddleware({
+      serializableCheck: false,
+    }),
 });
 
 export { store };
