@@ -10,11 +10,11 @@ const Home = () => {
   const navigate = useNavigate();
   const capitalisedName = name => name.charAt(0).toUpperCase() + name.slice(1);
   const handleClick = e => {
-    navigate(e.target.dataset.path);
+    navigate(`/goit-react-hw-08-phonebook${e.target.dataset.path}`);
   };
   const logOut = () => {
     dispatch(handleLogOut());
-	navigate('/')
+	navigate('/goit-react-hw-08-phonebook')
   };
 
   return (

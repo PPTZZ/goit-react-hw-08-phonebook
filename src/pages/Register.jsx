@@ -29,7 +29,7 @@ const Register = () => {
     };
     dispatch(handleRegister(userData)).then(result => {
       if (result.type === 'auth/handleRegister/fulfilled') {
-        navigate('/');
+        navigate('/goit-react-hw-08-phonebook');
       }
     });
     e.currentTarget.reset();

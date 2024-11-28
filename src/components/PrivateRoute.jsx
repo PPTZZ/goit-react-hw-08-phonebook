@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 const PrivateRoute = ({ children }) => {
   const isLoggedIn = useSelector(selectIsLoggedIn);
   if (!isLoggedIn) {
-    return <Navigate to='/login' />;
+    return <Navigate to='/goit-react-hw-08-phonebook/login' />;
   }
   return children;
 };

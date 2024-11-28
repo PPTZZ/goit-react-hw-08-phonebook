@@ -10,7 +10,7 @@ const App = () => {
     <>
       <Routes>
         <Route
-          path='/'
+          path='/goit-react-hw-08-phonebook'
           element={
             <PrivateRoute>
               <Home />
@@ -18,15 +18,15 @@ const App = () => {
           }
         />
         <Route
-          path='/contacts'
+          path='/goit-react-hw-08-phonebook/contacts'
           element={
             <PrivateRoute>
               <Contacts />
             </PrivateRoute>
           }
         />
-        <Route path='/login' element={<Login />} />
-        <Route path='/register' element={<Register />} />
+        <Route path='/goit-react-hw-08-phonebook/login' element={<Login />} />
+        <Route path='/goit-react-hw-08-phonebook/register' element={<Register />} />
       </Routes>
     </>
   );

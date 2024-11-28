@@ -30,7 +30,7 @@ const Login = () => {
     };
     dispatch(handleLogIn(userData)).then(result => {
       if (result.type === 'auth/handleLogIn/fulfilled') {
-        navigate('/');
+        navigate('/goit-react-hw-08-phonebook');
       }
     });
   };
