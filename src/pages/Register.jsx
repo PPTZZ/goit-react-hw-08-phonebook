@@ -2,8 +2,10 @@ import { Button, Container, Paper, TextField, Typography } from '@mui/material';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { handleRegister } from '../services/fetchAPI';
+import { useNavigate } from 'react-router-dom';
 
 const Register = () => {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
@@ -25,7 +27,11 @@ const Register = () => {
       email,
       password,
     };
-    dispatch(handleRegister(userData));
+    dispatch(handleRegister(userData)).then(result => {
+      if (result.type === 'auth/handleRegister/fulfilled') {
+        navigate('/');
+      }
+    });
     e.currentTarget.reset();
   };
   return (

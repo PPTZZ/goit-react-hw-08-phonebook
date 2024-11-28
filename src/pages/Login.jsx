@@ -7,12 +7,12 @@ import {
   Typography,
 } from '@mui/material';
 import { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { Link, useNavigate } from 'react-router-dom';
 import { handleLogIn } from '../services/fetchAPI';
-import {  selectUser } from '../redux/selectors';
 
 const Login = () => {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -22,18 +22,20 @@ const Login = () => {
   const handlePassword = e => {
     setPassword(e.target.value);
   };
-  const isLoggedIn = useSelector(selectUser)
   const onSubmit = e => {
     e.preventDefault();
     const userData = {
       email,
       password,
     };
-    dispatch(handleLogIn(userData))
+    dispatch(handleLogIn(userData)).then(result => {
+      if (result.type === 'auth/handleLogIn/fulfilled') {
+        navigate('/');
+      }
+    });
   };
   return (
     <>
-    {isLoggedIn.name}
       <Container
         sx={{
           display: 'flex',
