@@ -7,9 +7,13 @@ import {
   Typography,
 } from '@mui/material';
 import { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
+import { handleLogIn } from '../services/fetchAPI';
+import {  selectUser } from '../redux/selectors';
 
 const Login = () => {
+  const dispatch = useDispatch();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const handleEmail = e => {
@@ -18,16 +22,18 @@ const Login = () => {
   const handlePassword = e => {
     setPassword(e.target.value);
   };
-
+  const isLoggedIn = useSelector(selectUser)
   const onSubmit = e => {
     e.preventDefault();
     const userData = {
       email,
       password,
     };
+    dispatch(handleLogIn(userData))
   };
   return (
     <>
+    {isLoggedIn.name}
       <Container
         sx={{
           display: 'flex',
@@ -79,7 +85,7 @@ const Login = () => {
           <Box>
             <Typography>Forgot password</Typography>
             <Typography>
-              Don't have an account? <Link to={'/register'}>Sign up!</Link>
+              Don&apos;t have an account? <Link to={'/register'}>Sign up!</Link>
             </Typography>
           </Box>
         </Paper>
