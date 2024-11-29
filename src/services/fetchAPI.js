@@ -1,19 +1,8 @@
 import axios from 'axios';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 
+
 axios.defaults.baseURL = 'https://connections-api.goit.global';
-
-// Adding JWT
-const addAuthHeader = token => {
-	axios.defaults.headers.common.Authorization = `Bearer ${token}`;
-	console.log(token);
-	
-  };
-
-// Removing JWT
-const removeAuthHeader = () => {
-	axios.defaults.headers.common.Authorization = '';
-};
 
 // Handling registration
 export const handleRegister = createAsyncThunk(
@@ -21,7 +10,7 @@ export const handleRegister = createAsyncThunk(
 	async (userData, thunkAPI) => {
 		try {
 			const response = await axios.post('/users/signup', userData);
-			addAuthHeader(response.data.token);
+			axios.defaults.headers.common.Authorization = `Bearer ${response.data.token}`;
 			return response.data;
 		} catch (error) {
 			console.error(error.message);
@@ -37,7 +26,7 @@ export const handleLogIn = createAsyncThunk(
 	async (userData, thunkAPI) => {
 		try {
 			const response = await axios.post('/users/login', userData);
-			addAuthHeader(response.data.token);
+			axios.defaults.headers.common.Authorization = `Bearer ${response.data.token}`;
 			return response.data;
 		} catch (error) {
 			return thunkAPI.rejectWithValue(error.message);
@@ -51,7 +40,7 @@ export const handleLogOut = createAsyncThunk(
 	async (_, thunkAPI) => {
 		try {
 			await axios.post('/users/logout');
-			removeAuthHeader();
+			axios.defaults.headers.common.Authorization = '';
 		} catch (error) {
 			return thunkAPI.rejectWithValue(error.message);
 		}
@@ -77,8 +66,8 @@ export const addContact = createAsyncThunk(
 		try {
 			const response = await axios.post('/contacts', { text });
 			return response.data;
-		} catch (e) {
-			return thunkAPI.rejectWithValue(e.message);
+		} catch (error) {
+			return thunkAPI.rejectWithValue(error.message);
 		}
 	}
 );
