@@ -7,10 +7,9 @@ import {
   Typography,
 } from '@mui/material';
 import { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch} from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { handleLogIn } from '../services/handleLogin';
-import { selectAuthError } from '../redux/selectors';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -23,7 +22,7 @@ const Login = () => {
   const handlePassword = e => {
     setPassword(e.target.value);
   };
-  const hasError = useSelector(selectAuthError)
+  
   const onSubmit = e => {
     e.preventDefault();
     const userData = {

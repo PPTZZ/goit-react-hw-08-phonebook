@@ -6,8 +6,6 @@ axios.defaults.baseURL = 'https://connections-api.goit.global';
 // Adding JWT
 const addAuthHeader = token => {
 	axios.defaults.headers.common.Authorization = `Bearer ${token}`;
-	console.log(token);
-	
   };
 
 // Removing JWT
