@@ -87,7 +87,7 @@ const Login = () => {
           <Box>
             <Typography>Forgot password</Typography>
             <Typography>
-              Don&apos;t have an account? <Link to={'/register'}>Sign up!</Link>
+              Don&apos;t have an account? <Link to={'/goit-react-hw-08-phonebook/register'}>Sign up!</Link>
             </Typography>
           </Box>
         </Paper>
