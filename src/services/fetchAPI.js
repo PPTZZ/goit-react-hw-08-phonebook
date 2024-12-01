@@ -83,16 +83,3 @@ export const addContact = createAsyncThunk(
 	}
 );
 
-// Deleting Contacts
-const deleteContact = createAsyncThunk('contacts/delete', async id => {
-  await api.delete(`/contacts/${id}`);
-  return id;
-});
-
-export {
-  handleRegister,
-  fetchUser,
-  fetchContacts,
-  addContact,
-  deleteContact,
-};
