@@ -1,97 +1,81 @@
 import axios from 'axios';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 
-axios.defaults.baseURL = 'https://connections-api.goit.global';
+const api = axios.create({
+  baseURL: 'https://connections-api.goit.global/',
+});
 
-// Adding JWT
-const addAuthHeader = token => {
-	axios.defaults.headers.common.Authorization = `Bearer ${token}`;
-	console.log(token);
-	
-  };
-
-// Removing JWT
-const removeAuthHeader = () => {
-	axios.defaults.headers.common.Authorization = '';
-};
+api.interceptors.request.use(config => {
+  const token = localStorage.getItem('token');
+  if (token && config.headers) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
 
 // Handling registration
-export const handleRegister = createAsyncThunk(
-	'auth/handleRegister',
-	async (userData, thunkAPI) => {
-		try {
-			const response = await axios.post('/users/signup', userData);
-			addAuthHeader(response.data.token);
-			return response.data;
-		} catch (error) {
-			console.error(error.message);
+const handleRegister = createAsyncThunk(
+  'auth/handleRegister',
+  async (userData, thunkAPI) => {
+    try {
+      const response = await axios.post('/users/signup', userData);
 
-			return thunkAPI.rejectWithValue(error.message);
-		}
-	}
+      return response.data;
+    } catch (error) {
+      console.error(error.message);
+
+      return thunkAPI.rejectWithValue(error.message);
+    }
+  }
 );
 
-// Handling login
-export const handleLogIn = createAsyncThunk(
-	'auth/handleLogIn',
-	async (userData, thunkAPI) => {
-		try {
-			const response = await axios.post('/users/login', userData);
-			addAuthHeader(response.data.token);
-			return response.data;
-		} catch (error) {
-			return thunkAPI.rejectWithValue(error.message);
-		}
-	}
+// Getting user data
+const fetchUser = createAsyncThunk(
+  'auth/fetchUser',
+  async (_, { getState, rejectWithValue }) => {
+    const state = getState();
+    const token = state.auth.token;
+    if (!token) {
+      return rejectWithValue('No token found');
+    }
+
+    try {
+      const response = await api.get('/users/current', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || 'Failed to fetch user'
+      );
+    }
+  }
 );
 
-// Handling logout
-export const handleLogOut = createAsyncThunk(
-	'auth/handleLogOut',
-	async (_, thunkAPI) => {
-		try {
-			await axios.post('/users/logout');
-			removeAuthHeader();
-		} catch (error) {
-			return thunkAPI.rejectWithValue(error.message);
-		}
-	}
-);
-
-export const fetchContacts = createAsyncThunk(
-	'contacts/fetchAll',
-	async (_, thunkAPI) => {
-		try {
-			const response = await axios.get('/contacts');
-			return response.data;
-		} catch (error) {
-			return thunkAPI.thunkAPI.rejectWithValue(error.message);
-		}
-	}
-);
+// Getting Contacts
+const fetchContacts = createAsyncThunk('contacts/fetchAll', async () => {
+  const response = await api.get('/contacts');
+  return response.data;
+});
 
 // Adding Contacts
-export const addContact = createAsyncThunk(
-	'contacts/addContact',
-	async (text, thunkAPI) => {
-		try {
-			const response = await axios.post('/contacts', { text });
-			return response.data;
-		} catch (e) {
-			return thunkAPI.rejectWithValue(e.message);
-		}
-	}
-);
+const addContact = createAsyncThunk('contacts/add', async contact => {
+  const response = await api.post('/contacts', contact);
+  return response.data;
+});
 
 // Deleting Contacts
-export const deleteContact = createAsyncThunk(
-	'contacts/deleteContact',
-	async (contactId, thunkAPI) => {
-		try {
-			const response = await axios.delete(`/contacts/${contactId}`);
-			return response.data;
-		} catch (e) {
-			return thunkAPI.rejectWithValue(e.message);
-		}
-	}
-);
+const deleteContact = createAsyncThunk('contacts/delete', async id => {
+  await api.delete(`/contacts/${id}`);
+  return id;
+});
+
+export {
+  handleRegister,
+  fetchUser,
+  fetchContacts,
+  addContact,
+  deleteContact,
+};

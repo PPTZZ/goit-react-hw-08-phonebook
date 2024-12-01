@@ -1,36 +1,44 @@
 import { createSlice } from '@reduxjs/toolkit';
-import {
-  handleLogIn,
-  handleLogOut,
-  handleRegister,
-} from '../../services/fetchAPI';
+import { fetchUser } from '../../services/fetchAPI';
+
+const initialState = {
+  token: localStorage.getItem('token'),
+  email: localStorage.getItem('email'),
+  error: null,
+};
 
 const authSlice = createSlice({
   name: 'auth',
-  initialState: {
-    user: { name: null, email: null },
-    token: null,
-    isLoggedIn: false,
-    error: null,
+  initialState,
+  reducers: {
+    handleLogin(state, action) {
+      state.token = action.payload.token;
+      state.email = action.payload.email;
+      state.error = null;
+      localStorage.setItem('token', action.payload.token);
+      localStorage.setItem('email', action.payload.email);
+    },
+    handleLogout(state) {
+      state.token = null;
+      state.email = null;
+      state.error = null;
+      localStorage.removeItem('token');
+      localStorage.removeItem('email');
+    },
   },
   extraReducers: builder => {
-    builder
-      .addCase(handleRegister.fulfilled, (state, action) => {
-        state.user = action.payload.user;
-        state.token = action.payload.token;
-        state.isLoggedIn = true;
-      })
-      .addCase(handleLogIn.fulfilled, (state, action) => {
-        state.user = action.payload.user;
-        state.token = action.payload.token;
-        state.isLoggedIn = true;
-      })
-      .addCase(handleLogOut.fulfilled, state => {
-        state.user = { name: null, email: null };
-        state.token = null;
-        state.isLoggedIn = false;
-      });
+    builder.addCase(fetchUser.fulfilled, (state, action) => {
+      state.email = action.payload.email;
+      state.error = null;
+    });
+    builder.addCase(fetchUser.rejected, (state, action) => {
+      state.token = null;
+      state.email = null;
+      state.error = action.payload;
+      localStorage.removeItem('token');
+    });
   },
 });
 
-export const authReducer = authSlice.reducer;
+export const { handleLogin, handleLogout } = authSlice.actions;
+export default authSlice.reducer;
