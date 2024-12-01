@@ -1,70 +1,87 @@
 import axios from 'axios';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 
-const api = axios.create({
-  baseURL: 'https://connections-api.goit.global/',
-});
+axios.defaults.baseURL = 'https://connections-api.goit.global';
 
-api.interceptors.request.use(config => {
-  const token = localStorage.getItem('token');
-  if (token && config.headers) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
+// Adding JWT
+const addAuthHeader = token => {
+	axios.defaults.headers.common.Authorization = `Bearer ${token}`;
+	console.log(token);
+	
+  };
+
+// Removing JWT
+const removeAuthHeader = () => {
+	axios.defaults.headers.common.Authorization = '';
+};
 
 // Handling registration
-const handleRegister = createAsyncThunk(
-  'auth/handleRegister',
-  async (userData, thunkAPI) => {
-    try {
-      const response = await axios.post('/users/signup', userData);
-
-      return response.data;
-    } catch (error) {
-      console.error(error.message);
+export const handleRegister = createAsyncThunk(
+	'auth/handleRegister',
+	async (userData, thunkAPI) => {
+		try {
+			const response = await axios.post('/users/signup', userData);
+			addAuthHeader(response.data.token);
+			return response.data;
+		} catch (error) {
+			console.error(error.message);
 
       return thunkAPI.rejectWithValue(error.message);
     }
   }
 );
 
-// Getting user data
-const fetchUser = createAsyncThunk(
-  'auth/fetchUser',
-  async (_, { getState, rejectWithValue }) => {
-    const state = getState();
-    const token = state.auth.token;
-    if (!token) {
-      return rejectWithValue('No token found');
-    }
-
-    try {
-      const response = await api.get('/users/current', {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      return response.data;
-    } catch (error) {
-      return rejectWithValue(
-        error.response?.data?.message || 'Failed to fetch user'
-      );
-    }
-  }
+// Handling login
+export const handleLogIn = createAsyncThunk(
+	'auth/handleLogIn',
+	async (userData, thunkAPI) => {
+		try {
+			const response = await axios.post('/users/login', userData);
+			addAuthHeader(response.data.token);
+			return response.data;
+		} catch (error) {
+			return thunkAPI.rejectWithValue(error.message);
+		}
+	}
 );
 
-// Getting Contacts
-const fetchContacts = createAsyncThunk('contacts/fetchAll', async () => {
-  const response = await api.get('/contacts');
-  return response.data;
-});
+// Handling logout
+export const handleLogOut = createAsyncThunk(
+	'auth/handleLogOut',
+	async (_, thunkAPI) => {
+		try {
+			await axios.post('/users/logout');
+			removeAuthHeader();
+		} catch (error) {
+			return thunkAPI.rejectWithValue(error.message);
+		}
+	}
+);
+
+export const fetchContacts = createAsyncThunk(
+	'contacts/fetchAll',
+	async (_, thunkAPI) => {
+		try {
+			const response = await axios.get('/contacts');
+			return response.data;
+		} catch (error) {
+			return thunkAPI.thunkAPI.rejectWithValue(error.message);
+		}
+	}
+);
 
 // Adding Contacts
-const addContact = createAsyncThunk('contacts/add', async contact => {
-  const response = await api.post('/contacts', contact);
-  return response.data;
-});
+export const addContact = createAsyncThunk(
+	'contacts/addContact',
+	async (text, thunkAPI) => {
+		try {
+			const response = await axios.post('/contacts', { text });
+			return response.data;
+		} catch (e) {
+			return thunkAPI.rejectWithValue(e.message);
+		}
+	}
+);
 
 // Deleting Contacts
 const deleteContact = createAsyncThunk('contacts/delete', async id => {
