@@ -9,29 +9,29 @@ import {
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
-import { handleLogin } from '../services/handleAuth';
-import { selectLogin } from '../redux/selectors';
+import { handleLogIn } from '../services/handleLogin';
+import { selectAuthError } from '../redux/selectors';
 
 const Login = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const login = useSelector(selectLogin);
   const handleEmail = e => {
     setEmail(e.target.value);
   };
   const handlePassword = e => {
     setPassword(e.target.value);
   };
+  const hasError = useSelector(selectAuthError)
   const onSubmit = e => {
     e.preventDefault();
     const userData = {
       email,
       password,
     };
-    dispatch(handleLogin(userData)).then(result => {
-      if (result.type === 'auth/login/fulfilled') {
+    dispatch(handleLogIn(userData)).then(result => {
+      if (result.type === 'auth/handleLogIn/fulfilled') {
         navigate('/goit-react-hw-08-phonebook');
       }
     });
@@ -89,8 +89,7 @@ const Login = () => {
           <Box>
             <Typography>Forgot password</Typography>
             <Typography>
-              Don&apos;t have an account?{' '}
-              <Link to={'/goit-react-hw-08-phonebook/register'}>Sign up!</Link>
+              Don&apos;t have an account? <Link to={'/register'}>Sign up!</Link>
             </Typography>
           </Box>
         </Paper>

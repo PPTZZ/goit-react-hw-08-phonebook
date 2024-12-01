@@ -6,17 +6,33 @@ import {
   Toolbar,
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
+import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { setSearch } from '../redux/slices/contactSlice';
+import { handleLogOut } from '../services/handleLogin';
 
 const Searchbar = () => {
+	const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const handleSearchChange = e => {
+    dispatch(setSearch(e.target.value));
+  };
+  const logOut = () => {
+    dispatch(handleLogOut());
+    navigate('/goit-react-hw-08-phonebook/contacts');
+  };
+
   return (
     <AppBar position='static'>
       <Toolbar sx={{ display: 'flex', justifyContent: 'center' }}>
         <Button
           variant='contained'
-          sx={{ position: 'absolute', top: 10, right: 10, bgcolor:'white', color:'blue' }}>
+          sx={{ position: 'absolute', top: 10, right: 10, bgcolor:'white', color:'blue' }}
+          onClick={logOut}>
           Log Out
         </Button>
         <TextField
+          onChange={handleSearchChange}
           variant='outlined'
           placeholder='Search'
           sx={{

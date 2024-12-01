@@ -1,28 +1,29 @@
 import { Button, Container, Paper, Typography } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
-
-import { useNavigate } from 'react-router-dom';
 import { selectUser } from '../redux/selectors';
-import { logout } from '../redux/slices/authSlice';
+import { useNavigate } from 'react-router-dom';
+import { handleLogOut } from '../services/handleLogin';
+
 const Home = () => {
+  const dispatch = useDispatch();
   const user = useSelector(selectUser);
   const navigate = useNavigate();
-  const dispatch = useDispatch();
   const capitalisedName = name => name.charAt(0).toUpperCase() + name.slice(1);
   const handleClick = e => {
     navigate(`/goit-react-hw-08-phonebook${e.target.dataset.path}`);
   };
-
-  const handleLogout = () => {
-    dispatch(logout());
+  const logOut = () => {
+    dispatch(handleLogOut());
+    navigate('/goit-react-hw-08-phonebook');
   };
+
   return (
     <Container>
       <Paper sx={{ px: 5, py: 10, height: '100vh', position: 'relative' }}>
         <Button
           variant='contained'
           sx={{ position: 'absolute', top: 10, right: 10 }}
-          onClick={handleLogout}>
+          onClick={logOut}>
           Log Out
         </Button>
         <Typography variant='h4' sx={{ mb: 1 }}>

@@ -1,10 +1,10 @@
 import { useSelector } from 'react-redux';
+import { selectIsLoggedIn } from '../redux/selectors';
 import { Navigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { selectLogin } from '../redux/selectors';
 
 const PrivateRoute = ({ children }) => {
-  const isLoggedIn = useSelector(selectLogin);
+  const isLoggedIn = useSelector(selectIsLoggedIn);
   if (!isLoggedIn) {
     return <Navigate to='/goit-react-hw-08-phonebook/login' />;
   }
