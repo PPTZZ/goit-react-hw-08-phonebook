@@ -1,44 +1,99 @@
-import { createSlice } from '@reduxjs/toolkit';
-import { fetchUser } from '../../services/fetchAPI';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import axios from 'axios';
 
-const initialState = {
-  token: localStorage.getItem('token'),
-  email: localStorage.getItem('email'),
-  error: null,
-};
+const API_URL = 'https://connections-api.goit.global';
+
+export const register = createAsyncThunk(
+  'auth/register',
+  async (userData, { rejectWithValue }) => {
+    try {
+      const response = await axios.post(`${API_URL}/users/signup`, userData);
+      axios.defaults.headers.common[
+        'Authorization'
+      ] = `Bearer ${response.data.token}`;
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
+export const login = createAsyncThunk(
+  'auth/login',
+  async (userData, { rejectWithValue }) => {
+    try {
+      const response = await axios.post(`${API_URL}/users/login`, userData);
+      axios.defaults.headers.common[
+        'Authorization'
+      ] = `Bearer ${response.data.token}`;
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
+export const logout = createAsyncThunk(
+  'auth/logout',
+  async (_, { rejectWithValue }) => {
+    try {
+      await axios.post(`${API_URL}/users/logout`);
+      axios.defaults.headers.common['Authorization'] = '';
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
 
 const authSlice = createSlice({
   name: 'auth',
-  initialState,
+  initialState: {
+    user: null,
+    token: null,
+    isLoading: false,
+    error: null,
+  },
   reducers: {
-    handleLogin(state, action) {
+    setCurrentUser: (state, action) => {
+      state.user = action.payload.user;
       state.token = action.payload.token;
-      state.email = action.payload.email;
-      state.error = null;
-      localStorage.setItem('token', action.payload.token);
-      localStorage.setItem('email', action.payload.email);
-    },
-    handleLogout(state) {
-      state.token = null;
-      state.email = null;
-      state.error = null;
-      localStorage.removeItem('token');
-      localStorage.removeItem('email');
     },
   },
   extraReducers: builder => {
-    builder.addCase(fetchUser.fulfilled, (state, action) => {
-      state.email = action.payload.email;
-      state.error = null;
-    });
-    builder.addCase(fetchUser.rejected, (state, action) => {
-      state.token = null;
-      state.email = null;
-      state.error = action.payload;
-      localStorage.removeItem('token');
-    });
+    builder
+      .addCase(register.pending, state => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(register.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.user = action.payload.user;
+        state.token = action.payload.token;
+      })
+      .addCase(register.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      })
+      .addCase(login.pending, state => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(login.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.user = action.payload.user;
+        state.token = action.payload.token;
+      })
+      .addCase(login.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      })
+      .addCase(logout.fulfilled, state => {
+        state.user = null;
+        state.token = null;
+      });
   },
 });
 
-export const { handleLogin, handleLogout } = authSlice.actions;
+export const { setCurrentUser } = authSlice.actions;
+
 export default authSlice.reducer;

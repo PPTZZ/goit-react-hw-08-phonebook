@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchContacts } from '../services/fetchAPI';
 import { Container, Typography } from '@mui/material';
 import Searchbar from '../components/Searchbar';
 import ContactList from '../components/ContactList';
 import AddBtn from '../components/AddBtn';
 import AlertBox from '../components/AlertBox';
 import Input from '../components/Input';
+import { fetchContacts } from '../services/handleContacts';
 import { selectContacts } from '../redux/selectors';
 
 const Contatcs = () => {
@@ -15,8 +15,9 @@ const Contatcs = () => {
   useEffect(() => {
     dispatch(fetchContacts());
   }, [dispatch]);
-  const existingContacts = useSelector(selectContacts);
 
+  const existingContacts = useSelector(selectContacts);
+  
   return (
     <>
       <Searchbar />

@@ -1,8 +1,8 @@
 import { Button, Container, Paper, TextField, Typography } from '@mui/material';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { handleRegister } from '../services/fetchAPI';
 import { useNavigate } from 'react-router-dom';
+import { handleRegister } from '../services/handleAuth';
 
 const Register = () => {
   const navigate = useNavigate();
@@ -20,19 +20,23 @@ const Register = () => {
     setPassword(e.target.value);
   };
 
-  const onSubmit = e => {
+  const onSubmit = async e => {
     e.preventDefault();
     const userData = {
       name,
       email,
       password,
     };
-    dispatch(handleRegister(userData)).then(result => {
-      if (result.type === 'auth/handleRegister/fulfilled') {
+    try {
+      const result = await dispatch(handleRegister(userData));
+      if (handleRegister.fulfilled.match(result)) {
         navigate('/goit-react-hw-08-phonebook');
+      } else {
+        throw new Error(result.error.message || 'Registration failed.');
       }
-    });
-    e.currentTarget.reset();
+    } catch (err) {
+      console.error('Registration error:', err);
+    }
   };
   return (
     <>

@@ -7,15 +7,17 @@ import {
   Typography,
 } from '@mui/material';
 import { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
-import { handleLogIn } from '../services/fetchAPI';
+import { handleLogin } from '../services/handleAuth';
+import { selectLogin } from '../redux/selectors';
 
 const Login = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const login = useSelector(selectLogin);
   const handleEmail = e => {
     setEmail(e.target.value);
   };
@@ -28,8 +30,8 @@ const Login = () => {
       email,
       password,
     };
-    dispatch(handleLogIn(userData)).then(result => {
-      if (result.type === 'auth/handleLogIn/fulfilled') {
+    dispatch(handleLogin(userData)).then(result => {
+      if (result.type === 'auth/login/fulfilled') {
         navigate('/goit-react-hw-08-phonebook');
       }
     });
@@ -87,7 +89,8 @@ const Login = () => {
           <Box>
             <Typography>Forgot password</Typography>
             <Typography>
-              Don&apos;t have an account? <Link to={'/register'}>Sign up!</Link>
+              Don&apos;t have an account?{' '}
+              <Link to={'/goit-react-hw-08-phonebook/register'}>Sign up!</Link>
             </Typography>
           </Box>
         </Paper>

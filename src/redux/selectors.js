@@ -1,10 +1,10 @@
 import { createSelector } from '@reduxjs/toolkit';
 
-// Contacts selectors
-export const selectContacts = state => state.myContacts.contacts;
-export const selectFilter = state => state.myContacts.filter;
-export const selectLoader = state => state.myContacts.isLoading;
-export const selectError = state => state.myContacts.error;
+// contact selectors
+export const selectContacts = state => state.contacts.contacts;
+export const selectFilter = state => state.contacts.filter;
+export const selectError = state => state.contacts.error;
+export const selectLoading = state => state.contacts.isLoading;
 
 export const selectFilteredContacts = createSelector(
   [selectContacts, selectFilter],
@@ -15,10 +15,10 @@ export const selectFilteredContacts = createSelector(
   }
 );
 
-// Alert Selectors
+// alert selectors
 export const selectAlert = state => state.alert.value;
 
-// Auth Selectors
-export const selectIsLoggedIn = state => state.auth.isLoggedIn;
-export const selectUser = state => state.auth.user;
-export const selectIsRefreshing = state => state.auth.isRefreshing;
+
+// auth selectors
+export const selectUser = state=> state.auth.user
+export const selectLogin = state=>state.auth.isLoggedIn
